@@ -1,6 +1,6 @@
 <html>
          <div style="font-size: 20px; width: 1000px;">
-              <h1> <left> Welcome to BIOM 421! </left> </h1>
+              <h1> <left> Welcome to BIOM/CBE 480A5! </left> </h1>
               <p><left==========================================left> </p>
               <p> Below is the Github repository holding all the links to Jupyter Notebooks and files needed during the course. </p>
            <h3> Authors: </h3> <pre> Brian Munsky, Luis Aguilera, William Raymond, Dmitri Svetlov, Jack Forman, Joshua Cook, Michael May, Zachary Fox, and Eric Ron. </pre>
