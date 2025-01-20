@@ -230,6 +230,94 @@ def multiple_choice_quiz(quizName):
             action = "You got 10 right - touch your left ear."
             num2win = 10
 
+        case 'importing_and_using_modules':
+            question = "Which command would you use to perform the following operation on the module X:\n XXX ?"
+            optionsDict = {'import the module X':'import X',
+                        'import the module X and give it the alias Y':'import X as Y',
+                        'import a specific function Z from the module X':'from X import Z',
+                        'import all functions from the module X':'from X import *',
+                        'reload the module X':'import importlib; importlib.reload(X)',
+                        'check the version of the module X':'X.__version__',
+                        'check the documentation of the module X':'help(X)',
+                        'list the functions in the module X':'dir(X)',
+                        'list the functions in the module X that start with the letter "a"':'[i for i in dir(X) if i.startswith("a")]',
+                        'list the functions in the module X that contain the letter "a"':'[i for i in dir(X) if "a" in i]',
+                        'list the modules in the current environment':'!pip list',
+                        'list the modules in the current environment that start with the letter "a"':'!pip list | grep "^a"',
+                        'list the modules in the current environment that contain the letter "a"':'!pip list | grep "a"',
+                        'check if the module X is installed':'!pip show X',
+                        'install the module X':'!pip install X',
+                        'uninstall the module X':'!pip uninstall X',
+                        'update the module X':'!pip install --upgrade X',
+                        'show the current working directory':'!pwd or %pwd or os.getcwd()',
+                        'change the current working directory to X':'!cd X or %cd X or os.chdir(X)',
+                        'list the files in the current working directory':'!ls or %ls or os.listdir()',
+                        'create a new directory called X':'!mkdir X or os.mkdir(X)',
+                        'show the search path for modules':'sys.path',
+                        'add a directory to the search path for modules':'sys.path.append(X)',
+                        'show the user environment variables':'os.environ',
+                        'show the user home directory':'os.path.expanduser("~")'}
+            action = "You got 8 right - touch your palm to your forehead."
+            num2win = 8
+        case 'file_operations':
+            question = "Which command would you use to perform the following operation on the file X:\n XXX ?"
+            optionsDict = {'open the file X in read mode':'open(X, "r")',
+                        'open the file X in write mode':'open(X, "w")',
+                        'open the file X in append mode':'open(X, "a")',
+                        'open the file X in read and write mode':'open(X, "r+")',
+                        'close the file X':'X.close()',
+                        'read the entire contents of the file X':'X.read()',
+                        'read the first line of the file X':'X.readline()',
+                        'read all lines of the file X into a list':'X.readlines()',
+                        'write the string Y to the file X':'X.write(Y)',
+                        'write the list Y to the file X':'X.writelines(Y)',
+                        'check if the file X is closed':'X.closed',
+                        'check if the file X is readable':'X.readable()',
+                        'check if the file X is writable':'X.writable()',
+                        'check if the file X is seekable':'X.seekable()',
+                        'check if the file X is at the end':'X.seek(0,2)',
+                        'move the file X cursor to the beginning':'X.seek(0)',
+                        'move the file X cursor to the end':'X.seek(0,2)',
+                        'move the file X cursor to the 5th byte':'X.seek(5)',
+                        'move the file X cursor to the 5th line':'X.seek(0); [X.readline() for i in range(5)]',
+                        'move the file X cursor to the beginning of the 5th line':'X.seek(0); [X.readline() for i in range(4)]; X.readline()',
+                        'move the file X cursor to the 5th byte of the 5th line':'X.seek(0); [X.readline() for i in range(4)]; X.readline().seek(5)',
+                        'move the file X cursor to the end of the 5th line':'X.seek(0); [X.readline() for i in range(4)]; X.readline().seek(0,2)',
+                        'move the file X cursor to the beginning of the 5th line':'X.seek(0); [X.readline() for i in range (4)]; X.readline().seek(0)',
+                        'print the contents of the file X to the screen':'print(X.read())',
+                        'print the first line of the file X to the screen':'print(X.readline())',
+                        'open two files X and Y and create a new file Z with the contents of both':'with open(X) as f1, open(Y) as f2: with open(Z, "w") as f3: f3.write(f1.read() + f2.read())',
+                        'open the file X and read the first 5 bytes':'with open(X) as f: f.read(5)'}
+            action = "You got 10 right - touch your right ear."
+            num2win = 10
+
+        case 'pandas_operations':
+            question = "Which command would you use to perform the following operation on the pandas dataframe X:\n XXX ?"
+            optionsDict = {'create a new dataframe with the columns A and B from the dataframe X':'X[["A","B"]]',
+                        'create a new dataframe with the rows 5 to 10 from the dataframe X':'X.iloc[5:11]',
+                        'create a new dataframe with the columns A and B and the rows 5 to 10 from the dataframe X':'X[["A","B"]].iloc[5:11]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is greater than 5':'X[X["A"]>5][["A","B"]]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is greater than 5 and less than 10':'X[(X["A"]>5) & (X["A"]<10)][["A","B"]]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is greater than 5 or less than 10':'X[(X["A"]>5) | (X["A"]<10)][["A","B"]]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is not 5':'X[X["A"]!=5][["A","B"]]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is in the list Y':'X[X["A"].isin(Y)][["A","B"]]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is not in the list Y':'X[~X["A"].isin(Y)][["A","B"]]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is null':'X[X["A"].isnull()][["A","B"]]',
+                        'create a new dataframe with the columns A and B and the rows where the value in column A is not null':'X[~X["A"].isnull()][["A","B"]]',
+                        'show the first 5 rows of the dataframe X':'X.head()',
+                        'write the dataframe X to a csv file called Y (e.g., "Y.csv")' : 'X.to_csv(Y)',
+                        'print the column names of the dataframe X':'X.columns',
+                        'get the number of rows in the dataframe X':'len(X)',
+                        'get the number of columns in the dataframe X':'len(X.columns)',
+                        'get the numbers of rows and columns in the dataframe X':'X.shape',
+                        'find out what a function "function" in the dataframe X does':'help(X.function)',
+                        'print out the last 5 rows of the dataframe X':'X.tail()',
+                        'load a csv file called Y (e.g., "Y.csv") into a dataframe':'pd.read_csv(Y)',
+                        'import the pandas library':'import pandas as pd',
+                        'create a data frame from a numpy array Z with columns A and B':'pd.DataFrame(Z, columns=["A","B"])'}
+            action = "You got 10 right - turn to face to the left."
+            num2win = 10
+
         case _:
             print("Quiz not found")
             return
