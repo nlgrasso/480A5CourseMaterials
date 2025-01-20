@@ -175,6 +175,61 @@ def multiple_choice_quiz(quizName):
                         'create a random string of length 10 with only letters':'"".join(random.choices(string.ascii_letters, k=10))'}
             action = "You got 15 right - knock twice on the table."
             num2win = 15
+
+        case 'math_operations':
+            question = "Which command would you use to perform the following operation on the numbers X and Y:\n XXX ?"
+            optionsDict = {'add the numbers X and Y':'X + Y',
+                        'subtract the number Y from X':'X - Y',
+                        'multiply the numbers X and Y':'X * Y',
+                        'divide the number X by Y':'X / Y',
+                        'raise the number X to the power of Y':'X ** Y',
+                        'find the remainder of X divided by Y':'X % Y',
+                        'find the integer division of X divided by Y':'X // Y',
+                        'find the square root of X':'X ** 0.5',
+                        'find the absolute value of X':'abs(X)',
+                        'find the maximum of X and Y':'max(X,Y)',
+                        'find the minimum of X and Y':'min(X,Y)',
+                        'round the number X to the nearest integer':'round(X)',
+                        'round the number X to the nearest tenth':'round(X,1)',
+                        'round the number X to the nearest hundredth':'round(X,2)',
+                        'round the number X to the nearest thousandth':'round(X,3)',
+                        'check if the number X is equal to the number Y':'if X==Y',
+                        'check if the number X is not equal to the number Y':'if X!=Y',
+                        'check if the number X is greater than the number Y':'if X>Y',
+                        'check if the number X is less than the number Y':'if X<Y',
+                        'check if the number X is greater than or equal to the number Y':'if X>=Y',
+                        'check if the number X is less than or equal to the number Y':'if X<=Y',
+                        'check if the number X is positive':'if X>0',
+                        'check if the number X is negative':'if X<0',
+                        'check if the number X is even':'if X%2==0',
+                        'check if the number X is odd':'if X%2!=0',
+                        'check if the number X is a prime number':'if all(X%i!=0 for i in range(2,X))',
+                        'check if the number X is a multiple of Y':'if X%Y==0',
+                        'check if the number X is a power of Y':'if X == Y ** round(math.log(X, Y))'}
+            action = f"You got 10 right - stand up and then sit down."
+            num2win = 10
+        case 'string_formatting':
+            question = "Which command would you use to perform the following operation on the strings X and Y:\n XXX ?"
+            optionsDict = {'concatenate the strings X and Y':'X + Y',
+                        'concatenate the strings X and Y with a space in between':'X + " " + Y',
+                        'complete a string to include the value of the variable X':'f"Value of X is {X}"',
+                        'complete a string to include the value of the variable X with 2 decimal places':'f"Value of X is {X:.2f}"',
+                        'complete a string to include the values and sum of the variables X and Y':'f"Values of X and Y are {X} and {Y} and their sum is {X+Y}"',
+                        'create a string will all the numbers in the list X on a single line':'" ".join(map(str,X))',
+                        'create a string will all the numbers in the list X on separate lines':'"\\n".join(map(str,X))',
+                        'create a string with the numbers in the list X separated by commas':'",".join(map(str,X))',
+                        'create a string with the numbers in the list X separated by tabs':'"\\t".join(map(str,X))',
+                        'align the string X to the left in a field of width 10':'X.ljust(10)',
+                        'align the string X to the right in a field of width 10':'X.rjust(10)',
+                        'center the string X in a field of width 10':'X.center(10)',
+                        'fill the string X with dashes to make it 10 characters long':'X.ljust(10,"-")',
+                        'convert a string X to uppercase':'X.upper()',
+                        'convert a string X to lowercase':'X.lower()',
+                        'capitalize the first letter of the string X':'X.capitalize()',
+                        'capitalize the first letter after a space in the string X':'" ".join(i.capitalize() for i in X.split())'}
+            action = "You got 10 right - touch your left ear."
+            num2win = 10
+
         case _:
             print("Quiz not found")
             return
