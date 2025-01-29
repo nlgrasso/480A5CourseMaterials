@@ -318,6 +318,57 @@ def multiple_choice_quiz(quizName):
             action = "You got 10 right - turn to face to the left."
             num2win = 10
 
+        case 'for_and_while_loops':
+            question = "Which command would you use to perform the following operations:\n XXX ?"
+            optionsDict = {'print each element of the list X':'for i in X: print(i)',
+                        'print each element of the list X with its index':'for i,j in enumerate(X): print(j,i)',
+                        'print ten random integers between 1 and 100':'for i in range(10): print(random.randint(1,100))',
+                        'print random integers between 1 and 100 until the number 5 is generated':'while True: i = random.randint(1,100); print(i); if i==5: break',
+                        'exit the loop':'break',
+                        'skip the rest of the code in the loop and move to the next iteration':'continue',
+                        'skip to the next iteration if the iteration number is even':'if i%2==0: continue',
+                        'exit the loop if the iteration number is even':'if i%2==0: break',
+                        'continue without any effect if the number is even':'if i%2==0: pass',
+                        'just keep going as if there was no command':'pass',
+                        'print all values in the dictionary X':'for i in X.values(): print(i)',
+                        'print all keys in the dictionary X':'for i in X.keys(): print(i)',
+                        'print all key-value pairs in the dictionary X':'for i,j in X.items(): print(i,j)',
+                        'count how many times the letter "a" appears in the string X':'sum(1 for i in X if i=="a")',
+                        'count how many tries it takes to get a random number less than 5':'i = 0; while random.randint(1,100)>=5: i+=1; print(i)',
+                        'count how many random numbers it takes to get a total greater than 100':'i = 0; total = 0; while t<=100: t += random.randint(1,100); i+=1; print(i)'}
+            action = "You got 7 right - touch your right ear."
+            num2win = 7
+
+        case 'logic_statements':
+            question = "Which command would you use to perform the following operations:\n XXX ?"
+            optionsDict = {'check if the number X is greater than 5':'if X>5',
+                        'check if the number X is less than 5':'if X<5',
+                        'check if the number X is equal to 5':'if X==5',
+                        'check if the number X is not equal to 5':'if X!=5',
+                        'check if the number X is greater than or equal to 5':'if X>=5',
+                        'check if the number X is less than or equal to 5':'if X<=5',
+                        'check if the number X is between 5 and 10':'if 5<=X<=10',
+                        'check if the number X is not between 5 and 10':'if not 5<=X<=10',
+                        'check if the number X is between 5 and 10 or between 15 and 20':'if 5<=X<=10 or 15<=X<=20',
+                        'check if the number X is between 5 and 10 and between 15 and 20':'if 5<=X<=10 and 15<=X<=20',
+                        'check if the number X is not between 5 and 10 or between 15 and 20':'if not 5<=X<=10 or 15<=X<=20',
+                        'check if the number X is not between 5 and 10 and between 15 and 20':'if not 5<=X<=10 and 15<=X<=20',
+                        'check if the number X is positive':'if X>0',
+                        'check if the number X is negative':'if X<0',
+                        'check if the number X is even':'if X%2==0',
+                        'check if the number X is odd':'if X%2!=0',
+                        'check if the number X is a multiple of Y':'if X%Y==0',
+                        'check if the number X is a power of Y':'if X == Y ** round(math.log(X, Y))',
+                        'check if the number X is a prime number':'if all(X%i!=0 for i in range(2,X))',
+                        'check if the string X is equal to the string Y':'if X==Y',
+                        'check if the the string X is contained in the string Y':'if X in Y',
+                        'check if the the string X is not contained in the string Y':'if X not in Y',
+                        'print if a number is even, odd, or zero':'if X==0: print("zero"); elif X%2==0: print("even"); else: print("odd")',
+                        'print if a number is positive, negative, or zero':'if X==0: print("zero"); elif X>0: print("positive"); else: print("negative")',
+                        'print if a number is a multiple of 3, 5, both, or neither':'if X%3==0 and X%5==0: print("both"); elif X%3==0: print("3"); elif X%5==0: print("5"); else: print("neither")'}
+            action = "You got 10 right - wave."
+            num2win = 10
+                        
         case _:
             print("Quiz not found")
             return
