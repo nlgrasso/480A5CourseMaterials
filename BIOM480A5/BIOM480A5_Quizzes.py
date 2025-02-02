@@ -256,9 +256,49 @@ def multiple_choice_quiz(quizName):
                         'show the search path for modules':'sys.path',
                         'add a directory to the search path for modules':'sys.path.append(X)',
                         'show the user environment variables':'os.environ',
-                        'show the user home directory':'os.path.expanduser("~")'}
+                        'show the user home directory':'os.path.expanduser("~")',
+                        'show the user name':'os.getlogin()',
+                        'shortcut to the home directory':'~',
+                        'shortcut to the current directory':'.',
+                        'shortcut to the parent directory':'..'}
             action = "You got 8 right - touch your palm to your forehead."
             num2win = 8
+        case 'command_line_tools':
+            question = "Which command would you use to perform the following operation on the command line:\n XXX ?"
+            optionsDict = {'list the files in the current directory without details':'ls',
+                        'list the files in the current directory with details':'ls -l',
+                        'list the files in the current directory with details and hidden files':'ls -la',
+                        'change the current directory to X':'cd X',
+                        'change the current directory to the parent directory':'cd ..',
+                        'change the current directory to the home directory':'cd ~',
+                        'create a new directory called X':'mkdir X',
+                        'remove the empty directory X':'rmdir X',
+                        'remove the directory X and all its contents':'rm -r X',
+                        'copy the file X to the directory Y':'cp X Y',
+                        'move the file X to the directory Y':'mv X Y',
+                        'rename the file X to Y':'mv X Y',
+                        'remove the file X':'rm X',
+                        'remove the file X without confirmation':'rm -f X',
+                        'print the contents of the file X':'cat X',
+                        'print the first 10 lines of the file X':'head X',
+                        'print the last 10 lines of the file X':'tail X',
+                        'print the first 5 lines of the file X that contain the word Y':'grep Y X | head -5',
+                        'print the last 5 lines of the file X that contain the word Y':'grep Y X | tail -5',
+                        'print the number of lines in the file X':'wc -l X',
+                        'print the number of words in the file X':'wc -w X',
+                        'print the number of characters in the file X':'wc -c X',
+                        'print the number of lines, words, and characters in the file X':'wc X',
+                        'print a list of recent commands':'history',
+                        'repeat the last command':'!!',
+                        'repeat the last command that started with the letter X':'!X',
+                        'get detailed information about the command X':'man X',
+                        'find the location of the command X':'which X',
+                        'print the current working directory':'pwd',
+                        'print the current user name':'whoami',
+                        'print the current date and time':'date'}
+            action = "You got 10 right - touch your left ear."
+            num2win = 10
+
         case 'file_operations':
             question = "Which command would you use to perform the following operation on the file X:\n XXX ?"
             optionsDict = {'open the file X in read mode':'open(X, "r")',
