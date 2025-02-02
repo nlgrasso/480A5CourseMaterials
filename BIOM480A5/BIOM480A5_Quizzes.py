@@ -414,6 +414,95 @@ def multiple_choice_quiz(quizName):
                         'print if a number is a multiple of 3, 5, both, or neither':'if X%3==0 and X%5==0: print("both"); elif X%3==0: print("3"); elif X%5==0: print("5"); else: print("neither")'}
             action = "You got 10 right - wave."
             num2win = 10
+
+        case 'numpy_arrays':
+            question = "Which command would you use to perform the following numpy operations:\n XXX ?"
+            optionsDict = {'create a vector X with the values 1, 2, and 3':'X = np.array([1,2,3])',
+                        'create a 3x3 matrix X with the values 1, 2, 3, 4, 5, 6, 7, 8, 9':'X = np.array([[1,2,3],[4,5,6],[7,8,9]])',
+                        'create a matrix X with 3 rows and 4 columns of zeros':'X = np.zeros((3,4))',
+                        'create a matrix X with 3 rows and 4 columns of ones':'X = np.ones((3,4))',
+                        'create a matrix X with 3 rows and 4 columns of random numbers':'X = np.random.rand(3,4)',
+                        'create a matrix X with 3 rows and 4 columns of random integers between 1 and 100':'X = np.random.randint(1,100,(3,4))',
+                        'create a matrix X with 3 rows and 4 columns of normally distributed random numbers':'X = np.random.randn(3,4)',
+                        'get the shape of the matrix X':'X.shape',
+                        'get the number of rows in the matrix X':'X.shape[0]',
+                        'get the number of columns in the matrix X':'X.shape[1]',
+                        'get the number of dimensions in the matrix X':'X.ndim',
+                        'get the number of elements in the matrix X':'X.size',
+                        'get the data type of the elements in the matrix X':'X.dtype',
+                        'get the sum of all elements in the matrix X':'X.sum()',
+                        'get the sum of the rows in the matrix X':'X.sum(axis=1)',
+                        'get the sum of the columns in the matrix X':'X.sum(axis=0)',
+                        'get the mean of all elements in the matrix X':'X.mean()',
+                        'get the mean of the rows in the matrix X':'X.mean(axis=1)',
+                        'get the first 5 columns of the matrix X':'X[:,:5]',
+                        'get the first 5 rows of the matrix X':'X[:5,:]',
+                        'get the first 5 elements of the matrix X':'X[:5]',
+                        'create a vector of 10 numbers from 1 to 10':'X = np.arange(1,11)',
+                        'create a vector of uniformly spaced numbers from 1 to 5 with 10 elements':'X = np.linspace(1,5,10)',
+                        'create a vector of 10 numbers from 1 to 10 in reverse order':'X = np.arange(10,0,-1)',
+                        'create an identity matrix with 5 rows and 5 columns':'X = np.eye(5)',
+                        'create a diagonal matrix with the values 1, 2, 3':'X = np.diag([1,2,3])',
+                        'create a vector of log-spaced numbers from 1 to 5 with 10 elements':'X = np.logspace(0,np.log10(5),10)'}
+            action = "You got 10 right - touch your left ear."
+            num2win = 10
+
+        case 'numpy_slicing':
+            question = "Which command would you use to perform the following numpy operations:\n XXX ?"
+            optionsDict = {'get the first element of the vector X':'X[0]',
+                        'get the last element of the vector X':'X[-1]',
+                        'get the first 3 elements of the vector X':'X[:3]',
+                        'get the last 3 elements of the vector X':'X[-3:]',
+                        'reshape the vector X into a 3x3 matrix':'X.reshape(3,3)',
+                        'transpose the matrix X':'X.T',
+                        'add a new row to the matrix X':'np.vstack((X,np.random.rand(1,X.shape[1])))',
+                        'add a new column to the matrix X':'np.hstack((X,np.random.rand(X.shape[0],1)))',
+                        'add a new dimension to the matrix X after the second existing dimension':'np.expand_dims(X,axis=2)',
+                        'add a new dimension to the matrix X before the first existing dimension':'np.expand_dims(X,axis=0)',
+                        'find the indices where the value in the matrix X is greater than 5':'np.where(X>5)',
+                        'adds a new dimension to X so that it is at least 2D':'np.atleast_2d(X)',
+                        'tile the matrix X 3 times along the first dimension':'np.tile(X,3,axis=0)',
+                        'convert the matrix X to a vector':'X.flatten()',
+                        'get the diagonal of the matrix X':'np.diag(X)',
+                        'convert the matrix X to a list':'X.tolist()',
+                        'convert the elements of the matrix X to integers':'X.astype(int)',
+                        'convert the elements of the matrix X to strings':'X.astype(str)',
+                        'convert the elements of the matrix X to floats':'X.astype(float)',
+                        'get the second to the fourth element of the vector X':'X[1:4]',
+                        'get the second to the last element of the vector X':'X[1:-1]',
+                        'get the first element and the last element of the vector X':'np.array([X[0], X[-1]])',
+                        'get the last element and the second to the last element of the vector X':'np.array([X[-1], X[-2]])',
+                        'get the first 3 elements and the last 3 elements of the vector X':'np.concatenate((X[:3], X[-3:]))',
+                        'get every third element starting with the first element of the vector X':'X[::3]',
+                        'get every third element starting with the second element of the vector X':'X[1::3]',
+                        'get a reversed vector with every third element starting with the last element of the vector X':'X[-1::-3]'}
+            action = "You got 8 right - touch your nose with your right hand."
+            num2win = 8
+
+        case 'linear_equations':
+            # The following questions will test students' knowledge of linear equations and how to solve them. Commands to consider are:
+            # - np.linalg: solve, lstsq, matrix_rank, inv, cross, dot, det, inner, outer, matmul, trace, norm, cond, inv, pinv, svd 
+            question = "Which command would you use to perform the following numpy operations:\n XXX ?"
+            optionsDict = {'solve the linear equation AX = B for X':'np.linalg.solve(A,B)',
+                        'find the least squares solution to the linear equation AX = B':'np.linalg.lstsq(A,B)',
+                        'find the rank of the matrix A':'np.linalg.matrix_rank(A)',
+                        'find the inverse of the matrix A':'np.linalg.inv(A)',
+                        'find the cross product of the vectors A and B':'np.cross(A,B)',
+                        'find the dot product of the vectors A and B':'np.dot(A,B)',
+                        'find the determinant of the matrix A':'np.linalg.det(A)',
+                        'find the inner product of the vectors A and B':'np.inner(A,B)',
+                        'find the outer product of the vectors A and B':'np.outer(A,B)',
+                        'find the matrix product of the matrices A and B':'np.matmul(A,B)',
+                        'find the augmented matrix of the linear equation AX = B':'np.hstack((A,B))',
+                        'find the rank of the augmented matrix of the linear equation AX = B':'np.linalg.matrix_rank(np.hstack((A,B)))',
+                        'find the trace of the matrix A':'np.trace(A)',
+                        'find the sum of the diagonal elements of the matrix A':'np.trace(A)',
+                        'find the norm of the vector A':'np.linalg.norm(A)',
+                        'find the condition number of the matrix A':'np.linalg.cond(A)',
+                        'find the Moore-Penrose pseudo-inverse of the matrix A':'np.linalg.pinv(A)',
+                        'find the singular value decomposition of the matrix A':'np.linalg.svd(A)'}
+            action = "You got 10 right - touch your right ear."
+            num2win = 10
                         
         case _:
             print("Quiz not found")
