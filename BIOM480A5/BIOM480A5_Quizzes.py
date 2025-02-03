@@ -503,8 +503,62 @@ def multiple_choice_quiz(quizName):
                         'find the singular value decomposition of the matrix A':'np.linalg.svd(A)'}
             action = "You got 10 right - touch your right ear."
             num2win = 10
-                        
+
+        
+        case 'class_objects':
+            question = "Consider the class 'Pacemaker' to answer the following questions:\n XXX ?"
+            optionsDict = {'Create a new pacemaker object with patient ID 123':'p = Pacemaker(123)',
+                        'Create a new pacemaker object with patient ID 123 and pacing rate 80':'p = Pacemaker(123, 80)',
+                        'Adjust the pacing rate of the pacemaker object p to 90':'p.adjust_rate(90)',
+                        'Monitor the heart rate of the pacemaker object p with a current heart rate of 70':'p.monitor_heart(70)',
+                        'What is the name of the constructor method in the Pacemaker class?':'__init__',
+                        'What kind of method is "__init__" in the Pacemaker class?':'constructor',
+                        'When called in a class, what does the "self" parameter refer to?':'the instance of the class',
+                        'How does one access the pacing rate of the pacemaker object p?':'p.pacing_rate',
+                        'How does one access the patient ID of the pacemaker object p?':'p.patient_id',
+                        'How does the method "adjust_rate" access the pacing rate of the pacemaker object?':'self.pacing_rate',
+                        'What is the default pacing rate of the pacemaker object p?':'70',
+                        'Is a default value set for the patient ID in the Pacemaker class?':'No',
+                        'What will happen if the patient ID is not provided when creating a new pacemaker object?':'An error will occur',
+                        'What will happen if3 the "pacing_rate" is not set when creating a new pacemaker object?':'It will default to 70',
+                        'What will happen if the pacing rate is set to 200 in the "adjust_rate" method?':'An error will occur'}
+            action = "You got 7 right - Yay!!"
+            num2win = 7
+            
         case _:
             print("Quiz not found")
             return
     multiple_choice(optionsDict, question, action, num2win)
+
+
+### Pacemaker Class in Python
+class Pacemaker:
+    """
+    A simple representation of a pacemaker used in biomedical engineering.
+    """
+
+    def __init__(self, patient_id, pacing_rate=70):
+        """
+        Initialize the pacemaker with a patient ID and a default pacing rate (bpm).
+        """
+        self.patient_id = patient_id
+        self.pacing_rate = pacing_rate  # Default 70 beats per minute
+
+    def adjust_rate(self, new_rate):
+        """
+        Adjust the pacing rate of the pacemaker.
+        """
+        if 40 <= new_rate <= 180:
+            self.pacing_rate = new_rate
+            print(f"Pacemaker rate set to {self.pacing_rate} bpm for Patient {self.patient_id}.")
+        else:
+            print("Error: Rate must be between 40 and 180 bpm.")
+
+    def monitor_heart(self, current_heart_rate):
+        """
+        Simulate heart monitoring. If the heart rate is too low, the pacemaker activates.
+        """
+        if current_heart_rate < self.pacing_rate:
+            print(f"Pacemaker activated for Patient {self.patient_id} to maintain {self.pacing_rate} bpm.")
+        else:
+            print(f"Heart rate normal ({current_heart_rate} bpm). No pacemaker intervention needed.")
