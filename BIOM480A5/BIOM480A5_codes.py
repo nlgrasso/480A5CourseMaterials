@@ -136,22 +136,3 @@ def pythonModules():
             'Gubbins',
             'Minimap2',
             'MetaPhlAn']
-
-
-
-
-
-
-
-            
-
-            
-
-
-
-
-
-            
-
-
-    ]
