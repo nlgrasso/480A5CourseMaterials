@@ -135,7 +135,8 @@ def pythonModules():
             'OpenMM',
             'Gubbins',
             'Minimap2',
-            'MetaPhlAn']
+            'MetaPhlAn',
+            'NextStrain']
 
 
 
