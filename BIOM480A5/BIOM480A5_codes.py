@@ -136,7 +136,8 @@ def pythonModules():
             'Gubbins',
             'Minimap2',
             'MetaPhlAn',
-            'NextStrain']
+            'NextStrain',
+            'TimeTree']
 
 
 
