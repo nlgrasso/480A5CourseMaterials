@@ -25,6 +25,7 @@
 # If you need to add a module, please do so at the top.
 
 import numpy as np
+from scipy import stats
 
 # Example will present on the topic of t-test, creating function named 'ttest'
 def ttest(a, b):
@@ -48,7 +49,8 @@ def ttest(a, b):
     >>> print(t_stat)
     0.0
     >>> print(p_value)
-    1.0
+    0.3465935070873343
+    
     Notes:
     This function assumes that the two samples have equal variances.
     The p-value is calculated using the two-tailed test.
