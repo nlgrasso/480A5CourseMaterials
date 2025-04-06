@@ -92,6 +92,54 @@ def ttest(a, b):
 
 #*********************
 # Jackson E will present on the topic of McNemar’s test, creating function named 'mcnemar' 
+import scipy.stats as stats
+
+def mcnemar(table):
+    """
+    Performs McNemar's test on a 2x2 contingency table.
+    
+    Parameters:
+    table (list of lists or 2D array): A 2x2 matrix representing paired binary outcomes.
+                                       Format: [[a, b],
+                                                [c, d]]
+                                       Where:
+                                       - a: both tests negative
+                                       - b: test1 negative, test2 positive
+                                       - c: test1 positive, test2 negative
+                                       - d: both tests positive
+    
+    Returns:
+    float: p-value from McNemar's test 
+
+    Example:
+    >>> table = [[10, 5],
+                [1, 14]]
+    >>> p_value = mcnemar(table)
+    >>> print(p_value)
+    0.22067136191984324
+
+    Notes: 
+    McNemar's test is used for paired nominal data. 
+    Because it is used with paired data, the sum of a and b must equal the sum of c and d.
+    The null hypothesis is that the proportions of discordant pairs are equal.
+    If the table is not 2x2, a ValueError will be raised.
+    This assumes that the input is a 2x2 matrix, and the DOF is 1.
+
+    """
+    # Check if the input is a 2x2 matrix
+    if len(table) != 2 or len(table[0]) != 2 or len(table[1]) != 2:
+        raise ValueError("Input must be a 2x2 matrix.")
+
+# Extract the values from the table
+    b = table[0][1]
+    c = table[1][0]
+    
+    # Calculate the test statistic
+    stat = (abs(b - c) - 1)**2 / (b + c)
+    p_value = stats.chi2.sf(stat, df=1)
+
+
+    return p_value
 
 #*********************
 # Delaney E will present on the topic of Ramsey RESET test, creating function named 'reset_test' 
