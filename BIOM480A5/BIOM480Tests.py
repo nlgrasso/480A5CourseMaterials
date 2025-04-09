@@ -237,6 +237,7 @@ def boschloo(table, alternative='two-sided'):
                      if p_val <= observed_fisher_p)
     
     return statistic, boschloo_p
+
 #*********************
 # Joshua H will present on the topic of Cochran’s Q test, creating function named 'cochran_q' 
 
