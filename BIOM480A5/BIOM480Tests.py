@@ -110,7 +110,56 @@ def ttest(a, b):
 
 #*********************
 # Nick G will present on the topic of Boschloo’s test, creating function named 'boschloo' 
+from scipy.stats import fisher_exact
+import itertools
 
+def boschloo(table, alternative='two-sided', step=0.001):
+    '''
+    Perform Boschloo’s exact test for a 2x2 contingency table.
+    
+    Parameters:
+    table : array_like
+        A 2x2 contingency table (e.g., [[a, b], [c, d]]).
+    alternative : {'two-sided', 'less', 'greater'}, optional
+        Defines the alternative hypothesis.
+    step : float
+        Step size for the grid of significance levels.
+
+    Returns:
+    p_value : float
+        The Boschloo exact test p-value.
+
+    Example:
+    >>> table = [[8, 2], [1, 5]]
+    >>> p_value = boschloo(table)
+    >>> print(p_value)
+
+    Notes:
+    Boschloo’s test improves the power over Fisher’s Exact Test by using 
+    the p-value from Fisher’s test as a statistic and calculating its significance.
+    '''
+    obs_p = fisher_exact(table, alternative=alternative)[1]
+    a_plus_b = sum(table[0])
+    c_plus_d = sum(table[1])
+    total = a_plus_b + c_plus_d
+
+    all_tables = [
+        [[a, a_plus_b - a], [c, c_plus_d - c]]
+        for a in range(a_plus_b + 1)
+        for c in range(c_plus_d + 1)
+    ]
+    
+    max_p = 0.0
+    for alpha in np.arange(0, 1 + step, step):
+        count = sum(
+            1 for t in all_tables 
+            if fisher_exact(t, alternative=alternative)[1] <= alpha
+        )
+        prob = count / len(all_tables)
+        if obs_p <= alpha and prob > max_p:
+            max_p = prob
+
+    return max_p
 #*********************
 # Joshua H will present on the topic of Cochran’s Q test, creating function named 'cochran_q' 
 
