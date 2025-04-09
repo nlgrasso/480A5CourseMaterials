@@ -167,7 +167,24 @@ def ttest(a, b):
 
 #*********************
 # AbbyMae W will present on the topic of Kendall’s Tau correlation test, creating function named 'kendalltau' 
-
+import numpy as np
+from scipy import stats
+def kendalltau(x, y):
+    '''
+    This function calculates the Kendall's Tau correlation coefficient and its p-value.
+    
+    Parameters:
+    x : First array
+    y : Second array 
+       
+    Returns:
+    tau : float
+        The calculated Kendall's Tau statistic.
+    p_value : float
+        The two-tailed p-value.
+    '''
+    tau, p_value = stats.kendalltau(x, y)
+    return tau, p_value
 #*********************
 # Alvina Y will present on the topic of F-test for overall regression, creating function named 'f_test' 
 
