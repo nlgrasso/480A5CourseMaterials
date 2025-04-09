@@ -165,6 +165,44 @@ def ttest(a, b):
 #*********************
 # Fig V will present on the topic of Linear regression coefficient test, creating function named 'linreg' 
 
+def linreg(X, y, coef_index = 0): 
+    """"
+    Performs a paired two sided t-test for a coefficient in linear regression
+    The inputs are X, y, and coef_index
+    X is a matrix of independent variables (including intercept)
+    y is a vector of dependent variables, also known as the response variable
+    coef_index is the index of the coefficient we are testing
+    The coef_index begins at zero for the position element in the coefficient vector
+
+    The function returns the t-statistic and p-value for the coefficient
+    """
+    from sklearn.linear_model import LinearRegression
+    import numpy as np
+    from scipy import stats
+
+    # Fit the linear regression model
+    model = LinearRegression().fit(X, y)
+
+    # Calculate predictions & residuals 
+    y_pred = model.predict(X)
+    residuals = y - y_pred
+    n = len(y)
+    p = X.shape[1]  # number of predictors (including intercept)
+
+    # Calculate the standard error of the coefficients 
+    sigma_sq = np.sum(residuals**2) / (n-p-1)
+    X_w_intercept = np.hstack((np.ones((X.shape[0], 1)), X))  # Add intercept to X
+    cov_matrix = sigma_sq * np.linalg.inv(np.dot(X_w_intercept.T, X_w_intercept))
+    se = np.sqrt(np.diag(cov_matrix))
+
+    # Calculate the t-statistic for the coefficient at coef_index
+    t_stat = model.coef_[coef_index] / se[coef_index]
+    # Calculate the p-value for the two-sided test  
+    p_value = 2 * (1 - stats.t.cdf(np.abs(t_stat), df=n-p-1))
+
+    return t_stat, p_value
+
+
 #*********************
 # AbbyMae W will present on the topic of Kendall’s Tau correlation test, creating function named 'kendalltau' 
 
