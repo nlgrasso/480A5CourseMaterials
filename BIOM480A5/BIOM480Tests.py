@@ -86,6 +86,58 @@ def ttest(a, b):
 
 #*********************
 # Chayanee C will present on the topic of D’Agostino and Pearson’s test, creating function named 'dagostino' 
+import numpy as np
+from scipy.stats import skew, kurtosis, skewtest, kurtosistest, normaltest
+
+def dagostino(data):
+    '''
+    Perform D'Agostino and Pearson's test for normality and return detailed diagnostics.
+
+    Parameters:
+    data : array_like
+        A one-dimensional array of sample data.
+
+    Returns:
+    results : dict
+        Dictionary containing:
+        - 'k2_statistic': combined test statistic
+        - 'p_value': p-value of the test
+        - 'skewness': sample skewness
+        - 'kurtosis': sample excess kurtosis
+        - 'z_skew': skewness Z-score
+        - 'z_kurt': kurtosis Z-score
+
+    Example:
+    >>> data = [-1.83, -0.58, 0.70, -1.35, 0.89, -0.18, 2.88, 0.94, -0.43, 0.27]
+    >>> result = dagostino(data)
+    >>> for key, val in result.items():
+            print(f"{key}: {val:.4f}")
+
+    Notes:
+    This function evaluates both skewness and kurtosis to test for normality using the 
+    D'Agostino and Pearson test. It provides individual shape measures as well 
+    as the combined test statistic and p-value.
+    '''
+    # Calculate skewness and kurtosis
+    skew_val = skew(data)
+    kurt_val = kurtosis(data)  # excess kurtosis by default
+
+    # Get Z-scores for skewness and kurtosis
+    z_skew, _ = skewtest(data)
+    z_kurt, _ = kurtosistest(data)
+
+    # Combined K² test
+    k2_stat, p_value = normaltest(data)
+
+    # Return all results as a dictionary
+    return {
+        'K2_statistic': k2_stat,
+        'p_value': p_value,
+        'Skewness': skew_val,
+        'Kurtosis': kurt_val,
+        'Z-score (skewness)': z_skew,
+        'Z-score (kurtosis)': z_kurt
+    }
 
 #*********************
 # Deven D will present on the topic of Chi-square goodness-of-fit test, creating function named 'chi2gof' 
