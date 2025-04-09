@@ -134,7 +134,7 @@ def dagostino(data):
         'K2_statistic': k2_stat,
         'p_value': p_value,
         'Skewness': skew_val,
-        'Kurtosis': kurt_val,
+        'Excess Kurtosis': kurt_val,
         'Z-score (skewness)': z_skew,
         'Z-score (kurtosis)': z_kurt
     }
