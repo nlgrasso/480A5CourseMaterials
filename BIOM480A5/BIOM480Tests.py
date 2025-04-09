@@ -89,7 +89,74 @@ def ttest(a, b):
 
 #*********************
 # Deven D will present on the topic of Chi-square goodness-of-fit test, creating function named 'chi2gof' 
-
+def chi2gof(observed, expected=None, p_vals=None, ddof=0):
+    '''
+    Perform a chi-square goodness-of-fit test.
+    
+    Parameters:
+    observed : array_like
+        Observed frequencies in each category.
+    expected : array_like, optional
+        Expected frequencies in each category. If None, a uniform distribution is assumed.
+    p_vals : array_like, optional
+        Probability for each category under null hypothesis. If provided, expected is calculated as p_vals * sum(observed).
+    ddof : int, optional
+        Delta degrees of freedom. Number of parameters estimated to calculate the expected frequencies.
+        
+    Returns:
+    chi2_stat : float
+        The chi-square test statistic.
+    p_value : float
+        The p-value for the test.
+    
+    Example:
+    >>> observed = [16, 18, 16, 14, 12, 12]  # Observed frequencies of die rolls
+    >>> p_vals = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]  # Expected probabilities for fair die
+    >>> chi2_stat, p_value = chi2gof(observed, p_vals=p_vals)
+    >>> print(f"Chi-square statistic: {chi2_stat:.4f}")
+    Chi-square statistic: 2.0000
+    >>> print(f"p-value: {p_value:.4f}")
+    p-value: 0.8491
+    
+    Notes:
+    - For the test to be valid, each expected frequency should typically be at least 5.
+    - The null hypothesis is that the observed frequencies match the expected frequencies.
+    - A low p-value suggests rejecting the null hypothesis, indicating the data doesn't fit the expected distribution.
+    '''
+    # Convert to numpy arrays for easier manipulation
+    observed = np.asarray(observed)
+    
+    # Calculate expected frequencies if not provided
+    if expected is None:
+        if p_vals is not None:
+            p_vals = np.asarray(p_vals)
+            if not np.isclose(np.sum(p_vals), 1.0):
+                raise ValueError("Probabilities must sum to 1")
+            expected = p_vals * np.sum(observed)
+        else:
+            # Uniform distribution if neither expected nor p_vals provided
+            expected = np.ones_like(observed) * np.sum(observed) / len(observed)
+    else:
+        expected = np.asarray(expected)
+    
+    # Check that observed and expected have the same shape
+    if observed.shape != expected.shape:
+        raise ValueError("Observed and expected arrays must have the same shape")
+    
+    # Check that all expected frequencies are > 0
+    if np.any(expected <= 0):
+        raise ValueError("All expected frequencies must be positive")
+    
+    # Calculate chi-square statistic
+    chi2_stat = np.sum(((observed - expected) ** 2) / expected)
+    
+    # Calculate degrees of freedom
+    df = len(observed) - 1 - ddof
+    
+    # Calculate p-value
+    p_value = 1 - stats.chi2.cdf(chi2_stat, df)
+    
+    return chi2_stat, p_value
 #*********************
 # Jackson E will present on the topic of McNemar’s test, creating function named 'mcnemar' 
 
