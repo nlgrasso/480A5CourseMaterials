@@ -517,6 +517,19 @@ def spearmanr(x, y):
 #*********************
 # Hayley S will present on the topic of Brown-Forsythe test, creating function named 'brown_forsythe' 
 
+
+def brown_forsythe_test(data):
+    # Step 1: Compute the transformed response variable z_ij
+    z = [np.abs(group - np.median(group)) for group in data]
+
+    # Step 2: Perform one-way ANOVA on z_ij
+    F_stat, p_value = stats.f_oneway(*z)\
+    
+    if p_value < 0.05:
+        print("Reject the null hypothesis: The variances are not equal.")
+
+    return F_stat, p_value
+
 #*********************
 # Kayla T will present on the topic of Distance correlation test, creating function named 'dcor' 
 
