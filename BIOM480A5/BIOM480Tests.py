@@ -86,10 +86,129 @@ def ttest(a, b):
 
 #*********************
 # Chayanee C will present on the topic of D’Agostino and Pearson’s test, creating function named 'dagostino' 
+import numpy as np
+from scipy.stats import skew, kurtosis, skewtest, kurtosistest, normaltest
+
+def dagostino(data):
+    '''
+    Perform D'Agostino and Pearson's test for normality and return detailed diagnostics.
+
+    Parameters:
+    data : array_like
+        A one-dimensional array of sample data.
+
+    Returns:
+    results : dict
+        Dictionary containing:
+        - 'k2_statistic': combined test statistic
+        - 'p_value': p-value of the test
+        - 'skewness': sample skewness
+        - 'kurtosis': sample excess kurtosis
+        - 'z_skew': skewness Z-score
+        - 'z_kurt': kurtosis Z-score
+
+    Example:
+    >>> data = [-1.83, -0.58, 0.70, -1.35, 0.89, -0.18, 2.88, 0.94, -0.43, 0.27]
+    >>> result = dagostino(data)
+    >>> for key, val in result.items():
+            print(f"{key}: {val:.4f}")
+
+    Notes:
+    This function evaluates both skewness and kurtosis to test for normality using the 
+    D'Agostino and Pearson test. It provides individual shape measures as well 
+    as the combined test statistic and p-value.
+    '''
+    # Calculate skewness and kurtosis
+    skew_val = skew(data)
+    kurt_val = kurtosis(data)  # excess kurtosis by default
+
+    # Get Z-scores for skewness and kurtosis
+    z_skew, _ = skewtest(data)
+    z_kurt, _ = kurtosistest(data)
+
+    # Combined K² test
+    k2_stat, p_value = normaltest(data)
+
+    # Return all results as a dictionary
+    return {
+        'K2_statistic': k2_stat,
+        'p_value': p_value,
+        'Skewness': skew_val,
+        'Excess Kurtosis': kurt_val,
+        'Z-score (skewness)': z_skew,
+        'Z-score (kurtosis)': z_kurt
+    }
 
 #*********************
 # Deven D will present on the topic of Chi-square goodness-of-fit test, creating function named 'chi2gof' 
-
+def chi2gof(observed, expected=None, p_vals=None, ddof=0):
+    '''
+    Perform a chi-square goodness-of-fit test.
+    
+    Parameters:
+    observed : array_like
+        Observed frequencies in each category.
+    expected : array_like, optional
+        Expected frequencies in each category. If None, a uniform distribution is assumed.
+    p_vals : array_like, optional
+        Probability for each category under null hypothesis. If provided, expected is calculated as p_vals * sum(observed).
+    ddof : int, optional
+        Delta degrees of freedom. Number of parameters estimated to calculate the expected frequencies.
+        
+    Returns:
+    chi2_stat : float
+        The chi-square test statistic.
+    p_value : float
+        The p-value for the test.
+    
+    Example:
+    >>> observed = [16, 18, 16, 14, 12, 12]  # Observed frequencies of die rolls
+    >>> p_vals = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]  # Expected probabilities for fair die
+    >>> chi2_stat, p_value = chi2gof(observed, p_vals=p_vals)
+    >>> print(f"Chi-square statistic: {chi2_stat:.4f}")
+    Chi-square statistic: 2.0000
+    >>> print(f"p-value: {p_value:.4f}")
+    p-value: 0.8491
+    
+    Notes:
+    - For the test to be valid, each expected frequency should typically be at least 5.
+    - The null hypothesis is that the observed frequencies match the expected frequencies.
+    - A low p-value suggests rejecting the null hypothesis, indicating the data doesn't fit the expected distribution.
+    '''
+    # Convert to numpy arrays for easier manipulation
+    observed = np.asarray(observed)
+    
+    # Calculate expected frequencies if not provided
+    if expected is None:
+        if p_vals is not None:
+            p_vals = np.asarray(p_vals)
+            if not np.isclose(np.sum(p_vals), 1.0):
+                raise ValueError("Probabilities must sum to 1")
+            expected = p_vals * np.sum(observed)
+        else:
+            # Uniform distribution if neither expected nor p_vals provided
+            expected = np.ones_like(observed) * np.sum(observed) / len(observed)
+    else:
+        expected = np.asarray(expected)
+    
+    # Check that observed and expected have the same shape
+    if observed.shape != expected.shape:
+        raise ValueError("Observed and expected arrays must have the same shape")
+    
+    # Check that all expected frequencies are > 0
+    if np.any(expected <= 0):
+        raise ValueError("All expected frequencies must be positive")
+    
+    # Calculate chi-square statistic
+    chi2_stat = np.sum(((observed - expected) ** 2) / expected)
+    
+    # Calculate degrees of freedom
+    df = len(observed) - 1 - ddof
+    
+    # Calculate p-value
+    p_value = 1 - stats.chi2.cdf(chi2_stat, df)
+    
+    return chi2_stat, p_value
 #*********************
 # Jackson E will present on the topic of McNemar’s test, creating function named 'mcnemar' 
 
@@ -119,10 +238,92 @@ def ttest(a, b):
 
 #*********************
 # Kyle H will present on the topic of Fisher’s exact test, creating function named 'fisher_exact' 
+def fisher_exact(table):
+    '''
+    Performs Fisher's exact test for a 2x2 contingency table.
+    
+    Parameters:
+    table : array-like
+        A 2x2 contingency table in the form of a list of lists or numpy array
+        [[a, b], [c, d]] where:
+        a = number of successes in group 1
+        b = number of successes in group 2
+        c = number of failures in group 1
+        d = number of failures in group 2
+    
+    Returns:
+    p_value : float
+        The p-value from Fisher's exact test
+    
+    Example:
+    >>> table = [[8, 2], [1, 5]]  # Treatment vs. Control recovery data
+    >>> p_value = fisher_exact(table)
+    >>> print(p_value)
+    0.0350877192982456
+    
+    Notes:
+    This function calculates the exact probability of observing the given table
+    or one more extreme under the null hypothesis of independence.
+    It is particularly useful for small sample sizes where chi-square 
+    approximations may not be valid.
+    '''
+    import numpy as np
+    from scipy import stats
+    
+    # Convert input to numpy array if it's not already
+    table = np.array(table, dtype=np.int64)
+    
+    # Check if the table is 2x2
+    if table.shape != (2, 2):
+        raise ValueError("Fisher's exact test requires a 2x2 contingency table")
+    
+    # Perform Fisher's exact test using SciPy
+    odds_ratio, p_value = stats.fisher_exact(table)
+    
+    return p_value
 
 #*********************
 # Emma H will present on the topic of Spearman correlation test, creating function named 'spearmanr' 
+def spearmanr(x, y):
 
+    '''
+    Perform a Spearman rank-order correlation test.
+    Parameters:
+    x : array_like
+        First sample.
+    y : array_like
+        Second sample.
+    Returns:
+    correlation : float
+        The Spearman correlation.
+    p_value : float
+        The two-tailed p-value.
+
+    Example:
+    >>> x = [1, 2, 3, 4, 5]
+    >>> y = [2, 3, 4, 5, 6]
+    >>> correlation, p_value = spearmanr(x, y)
+    >>> print(correlation)
+    1.0
+    >>> print(p_value)
+    0.0
+    
+    Notes:
+    This function calculates the Spearman rank-order correlation coefficient and its p-value.
+    The p-value is calculated using the two-tailed test.
+    The function assumes that the input data is one-dimensional and of equal length.
+    '''
+
+    # Calculate the ranks of the data
+    ranks_x = stats.rankdata(x)
+    ranks_y = stats.rankdata(y)
+    # Calculate the Spearman correlation
+    correlation = np.corrcoef(ranks_x, ranks_y)[0, 1]
+    # Calculate the p-value
+    n = len(x)
+    t_stat = correlation * np.sqrt((n - 2) / (1 - correlation**2))
+    p_value = 2 * (1 - stats.t.cdf(np.abs(t_stat), df=n - 2))
+    return correlation, p_value
 #*********************
 # Elijah J will present on the topic of Bartlett’s test, creating function named 'bartlett' 
 
@@ -206,7 +407,24 @@ def linreg(X, y, coef_index = 0):
 
 #*********************
 # AbbyMae W will present on the topic of Kendall’s Tau correlation test, creating function named 'kendalltau' 
-
+import numpy as np
+from scipy import stats
+def kendalltau(x, y):
+    '''
+    This function calculates the Kendall's Tau correlation coefficient and its p-value.
+    
+    Parameters:
+    x : First array
+    y : Second array 
+       
+    Returns:
+    tau : float
+        The calculated Kendall's Tau statistic.
+    p_value : float
+        The two-tailed p-value.
+    '''
+    tau, p_value = stats.kendalltau(x, y)
+    return tau, p_value
 #*********************
 # Alvina Y will present on the topic of F-test for overall regression, creating function named 'f_test' 
 
