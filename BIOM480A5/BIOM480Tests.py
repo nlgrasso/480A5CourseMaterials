@@ -238,6 +238,49 @@ def chi2gof(observed, expected=None, p_vals=None, ddof=0):
 
 #*********************
 # Kyle H will present on the topic of Fisher’s exact test, creating function named 'fisher_exact' 
+def fisher_exact(table):
+    '''
+    Performs Fisher's exact test for a 2x2 contingency table.
+    
+    Parameters:
+    table : array-like
+        A 2x2 contingency table in the form of a list of lists or numpy array
+        [[a, b], [c, d]] where:
+        a = number of successes in group 1
+        b = number of successes in group 2
+        c = number of failures in group 1
+        d = number of failures in group 2
+    
+    Returns:
+    p_value : float
+        The p-value from Fisher's exact test
+    
+    Example:
+    >>> table = [[8, 2], [1, 5]]  # Treatment vs. Control recovery data
+    >>> p_value = fisher_exact(table)
+    >>> print(p_value)
+    0.0350877192982456
+    
+    Notes:
+    This function calculates the exact probability of observing the given table
+    or one more extreme under the null hypothesis of independence.
+    It is particularly useful for small sample sizes where chi-square 
+    approximations may not be valid.
+    '''
+    import numpy as np
+    from scipy import stats
+    
+    # Convert input to numpy array if it's not already
+    table = np.array(table, dtype=np.int64)
+    
+    # Check if the table is 2x2
+    if table.shape != (2, 2):
+        raise ValueError("Fisher's exact test requires a 2x2 contingency table")
+    
+    # Perform Fisher's exact test using SciPy
+    odds_ratio, p_value = stats.fisher_exact(table)
+    
+    return p_value
 
 #*********************
 # Emma H will present on the topic of Spearman correlation test, creating function named 'spearmanr' 
