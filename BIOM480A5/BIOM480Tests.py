@@ -136,6 +136,7 @@ def vif(X, return_dataframe=True):
 
 #*********************
 # Chayanee C will present on the topic of D’Agostino and Pearson’s test, creating function named 'dagostino' 
+
 import numpy as np
 from scipy.stats import skew, kurtosis, skewtest, kurtosistest, normaltest
 
@@ -400,6 +401,7 @@ def reset_test(model, degree=2):
 
 #*********************
 # Lillian G will present on the topic of Mantel test, creating function named 'mantel' 
+
 def mantel_test(matrix_a, matrix_b, permutations=999, random_state=None):
     '''
     Performs a Mantel test to measure correlation between two distance matrices.
@@ -487,6 +489,7 @@ def mantel_test(matrix_a, matrix_b, permutations=999, random_state=None):
 
 #*********************
 # Nick G will present on the topic of Boschloo’s test, creating function named 'boschloo' 
+
 def boschloo(table, alternative='two-sided'):
     '''
     Perform Boschloo's exact test on a 2x2 contingency table.
@@ -622,6 +625,7 @@ def boschloo(table, alternative='two-sided'):
 
 #*********************
 # Kyle H will present on the topic of Fisher’s exact test, creating function named 'fisher_exact' 
+
 def fisher_exact(table):
     '''
     Performs Fisher's exact test for a 2x2 contingency table.
@@ -719,6 +723,36 @@ def spearmanr(x, y):
 
 #*********************
 # Matthew L will present on the topic of Lilliefors test, creating function named 'lilliefors' 
+#!pip install statsmodels
+from statsmodels.stats.diagnostic import lilliefors as sm_lilliefors
+
+def lilliefors(data):
+    '''
+    Perform the Lilliefors test for normality.
+    
+    Parameters:
+    data : array_like
+        The dataset to test for normality.
+        
+    Returns:
+    stat : float
+        The test statistic (maximum distance between ECDF and CDF).
+    p_value : float
+        The p-value from the Lilliefors test.
+    
+    Example:
+    >>> data = [2.1, 2.3, 1.9, 2.5, 2.0]
+    >>> stat, p_value = lilliefors(data)
+    >>> print(stat)
+    >>> print(p_value)
+    
+    Notes:
+    The test is similar to the Kolmogorov-Smirnov test but allows estimating
+    the mean and variance from the data. It is suitable when population
+    parameters are unknown.
+    '''
+    stat, p_value = sm_lilliefors(data)
+    return stat, p_value
 
 #*********************
 # Hassan M will present on the topic of Partial correlation test, creating function named 'partial_corr' 
@@ -740,7 +774,6 @@ def spearmanr(x, y):
 
 #*********************
 # Hayley S will present on the topic of Brown-Forsythe test, creating function named 'brown_forsythe' 
-
 
 def brown_forsythe_test(data):
     # Step 1: Compute the transformed response variable z_ij
