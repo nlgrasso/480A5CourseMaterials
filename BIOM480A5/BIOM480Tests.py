@@ -199,6 +199,7 @@ def linreg(X, y, coef_index = 0):
     t_stat = model.coef_[coef_index] / se[coef_index]
     # Calculate the p-value for the two-sided test  
     p_value = 2 * (1 - stats.t.cdf(np.abs(t_stat), df=n-p-1))
+    
 
     return t_stat, p_value
 
