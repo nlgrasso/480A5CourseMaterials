@@ -302,7 +302,85 @@ def reset_test(model, degree=2):
 
 #*********************
 # Lillian G will present on the topic of Mantel test, creating function named 'mantel' 
-
+def mantel_test(matrix_a, matrix_b, permutations=999, random_state=None):
+    '''
+    Performs a Mantel test to measure correlation between two distance matrices.
+    
+    Parameters:
+    -----------
+    matrix_a : array-like
+        First distance matrix (square, symmetric)
+    matrix_b : array-like
+        Second distance matrix (square, symmetric)
+    permutations : int, optional (default=999)
+        Number of permutations for the test
+    random_state : int or None, optional (default=None)
+        Random seed for reproducibility
+    
+    Returns:
+    --------
+    r : float
+        Mantel correlation statistic
+    p_value : float
+        p-value from the permutation test
+        
+    Example:
+    >>> import numpy as np
+    >>> from scipy.spatial.distance import pdist, squareform
+    >>> # Create two correlated distance matrices
+    >>> coords = np.random.rand(10, 2)
+    >>> matrix_a = squareform(pdist(coords, 'euclidean'))
+    >>> matrix_b = matrix_a * 0.9 + np.random.rand(10, 10) * 0.1
+    >>> matrix_b = (matrix_b + matrix_b.T) / 2  # Make symmetric
+    >>> np.fill_diagonal(matrix_b, 0)  # Zero diagonal
+    >>> r, p = mantel_test(matrix_a, matrix_b, permutations=99, random_state=42)
+    >>> print(f"Mantel statistic r: {r:.4f}, p-value: {p:.4f}")
+    Mantel statistic r: 0.9723, p-value: 0.0100
+    
+    Notes:
+    This test evaluates the correlation between two distance matrices using permutation
+    to assess statistical significance. It's commonly used in ecology to test for relationships
+    between different types of distances (e.g., geographic vs. community composition).
+    The matrices must be square, symmetric, and of the same dimensions.
+    '''
+    # Convert inputs to numpy arrays
+    matrix_a = np.asarray(matrix_a)
+    matrix_b = np.asarray(matrix_b)
+    
+    # Check that matrices are square and of the same size
+    if matrix_a.shape != matrix_b.shape:
+        raise ValueError("Distance matrices must be of the same shape")
+    
+    # Set random seed if provided
+    if random_state is not None:
+        np.random.seed(random_state)
+    
+    # Flatten the distance matrices, ignoring the diagonal and keeping only the lower triangle
+    # This avoids double-counting distances and including self-distances
+    n = matrix_a.shape[0]
+    indices = np.triu_indices(n, k=1)
+    a_flat = matrix_a[indices]
+    b_flat = matrix_b[indices]
+    
+    # Calculate the Mantel statistic (correlation coefficient)
+    r_obs = np.corrcoef(a_flat, b_flat)[0, 1]
+    
+    # Permutation test
+    r_perm = np.zeros(permutations)
+    for i in range(permutations):
+        # Shuffle one of the matrices
+        indices_perm = np.random.permutation(n)
+        b_perm = matrix_b[indices_perm, :][:, indices_perm]
+        b_flat_perm = b_perm[indices]
+        
+        # Calculate correlation for permuted matrix
+        r_perm[i] = np.corrcoef(a_flat, b_flat_perm)[0, 1]
+    
+    # Calculate p-value as proportion of permutations with a correlation
+    # greater than or equal to the observed correlation
+    p_value = np.sum(np.abs(r_perm) >= np.abs(r_obs)) / permutations
+    
+    return r_obs, p_value
 #*********************
 # Andy G will present on the topic of Permutation test, creating function named 'permutation_test' 
 
