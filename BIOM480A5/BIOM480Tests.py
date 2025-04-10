@@ -552,5 +552,47 @@ def kendalltau(x, y):
 #*********************
 # Polina Z will present on the topic of Harvey-Collier test, creating function named 'harvey_collier'
 
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.stats.diagnostic import linear_harvey_collier
+
+def harvey_collier(X, y):
+    """
+    Performs the Harvey-Collier test for linearity in a linear regression model.
+
+    Parameters:
+    X : array-like, shape (n_samples, n_features)
+        Predictor variables
+    y : array-like, shape (n_samples,)
+        Response variable
+
+    Returns:
+    p_value: float
+        p-value of the Harvey-Collier test.
+    
+    Example:
+    >>> X = np.linspace(0, 10, 100)
+    >>> y = np.sin(X) + np.random.normal(scale=0.1, size=100)
+    >>> p_value = harvey_collier(X, y)
+    >>> print(p_value)
+
+    Notes:
+    The Harvey-Collier Test checks whether a linear model is appropriately specified as linear.
+    A small p-value indicates that the model may be misspecified, and should be used with a nonlinear model instead.
+    """
+
+    # Ensure NumPy array. Converts data to 2D if it isn't already
+    X = np.asarray(X)
+    if X.ndim == 1:
+        X = X.reshape(-1, 1)
+    X = sm.add_constant(X)
+
+    # Fit linear regression model
+    model = sm.OLS(y, X).fit()
+
+    # Perform Harvey-Collier test and return p-value
+    t_stat, p_value = linear_harvey_collier(model)
+    return p_value
+
 #*********************
 
