@@ -215,6 +215,88 @@ def chi2gof(observed, expected=None, p_vals=None, ddof=0):
 #*********************
 # Delaney E will present on the topic of Ramsey RESET test, creating function named 'reset_test' 
 
+# The Ramsey RESET test is used to check for model misspecification in regression analysis.
+import statsmodels.api as sm
+import pandas as pd
+
+def reset_test(model, degree=2):
+    '''
+    Performs the Ramsey RESET test for model specification.
+
+    Parameters:
+    model : statsmodels.regression.linear_model.RegressionResultsWrapper
+        A fitted OLS model from statsmodels.
+    degree : int
+        The maximum power of the fitted values to include in the test (e.g., 2 includes yhat^2, 3 includes yhat^3, etc.).
+
+    Returns:
+    reset_result : dict
+        A dictionary containing the F-statistic, p-value, and null hypothesis statement.
+
+    Example:
+    >>> import statsmodels.api as sm
+    >>> import pandas as pd
+    >>> from sklearn.datasets import load_iris
+
+    >>> # Load the Iris dataset
+    >>> data = load_iris()
+    >>> df = pd.DataFrame(data.data, columns=data.feature_names)
+    >>> df['species'] = data.target
+
+    >>> # Define independent and dependent variables
+    >>> X = df[['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+    >>> X = sm.add_constant(X)  # add intercept
+    >>> y = df['species']  # species as dependent variable
+
+    >>> # Fit the initial linear regression model
+    >>> model = sm.OLS(y, X).fit()
+
+    >>> # Call the Ramsey RESET test with the degree argument
+    >>> result = reset_test(model, degree=3)
+
+    >>> # Print the test result
+    >>> print("Ramsey RESET Test Result:")
+    >>> for key, value in result.items():
+    >>>     print(f"{key}: {value}")
+    
+    Ramsey RESET Test Result:
+    F-statistic: <value>
+    p-value: <value>
+    df_diff: <value>
+    Null Hypothesis: Model is correctly specified. (No omitted nonlinear terms)
+
+    Notes:
+    The Ramsey RESET test detects general misspecification in a linear regression model
+    by adding powers of the fitted values and testing their joint significance.
+    A low p-value suggests the model may be missing nonlinear components.
+    '''
+    
+    # Check if the model is fitted/get fitted values
+    yhat = model.fittedvalues
+    # Create new dataframe with powers of fitted values
+    df = model.model.exog.copy()
+    for d in range(2, degree + 1):
+        df = pd.DataFrame(df, columns=model.model.exog_names)  # Convert to DataFrame to append new columns
+        # Add new columns for each power of fitted values
+        df[f'yhat^{d}'] = yhat**d
+
+    # Fit a new model with the original predictors and the new polynomial terms
+    y = model.model.endog
+    new_model = sm.OLS(y, sm.add_constant(df)).fit()
+
+    # Perform the F-test for the new model against the original model
+    f_test = new_model.compare_f_test(model)
+
+    # Extract the F-statistic and p-value
+    reset_result = {
+        'F-statistic': f_test[0],
+        'p-value': f_test[1],
+        'df_diff': int(f_test[2]),
+        'Null Hypothesis': 'Model is correctly specified. (No omitted nonlinear terms)'
+    }
+
+    return reset_result
+
 #*********************
 # Christian F will present on the topic of Shapiro-Wilk test, creating function named 'shapiro' 
 
