@@ -78,6 +78,56 @@ def ttest(a, b):
 #*********************
 # Ella B will present on the topic of Variance Inflation Factor (VIF) test, creating function named 'vif' 
 
+def vif(X, return_dataframe=True):
+   """
+   Calculate Variance Inflation Factor (VIF) for each variable in a dataset using scikit-learn.
+  
+   Parameters:
+   -----------
+   X : pandas.DataFrame
+       The input data containing predictor variables
+   return_dataframe : bool, default=True
+       If True, returns a pandas DataFrame with VIF values for each variable.
+       If False, returns a dictionary.
+  
+   Returns:
+   --------
+   pandas.DataFrame or dict
+       VIF values for each variable. Higher values (>5 or >10) indicate multicollinearity.
+   """
+   import pandas as pd
+   from sklearn.linear_model import LinearRegression
+  
+   # Converts to DataFrame if not already
+   if not isinstance(X, pd.DataFrame):
+       X = pd.DataFrame(X)
+  
+   # Calculate VIF for each variable
+   vif_data = {}
+   for col in X.columns:
+       # Features that will be used as predictors (all except the current one)
+       features = [x for x in X.columns if x != col]
+      
+       # Fit linear regression
+       X_features = X[features]
+       y = X[col]
+       reg = LinearRegression().fit(X_features, y)
+      
+       # Calculate R-squared
+       r2 = reg.score(X_features, y)
+      
+       # Calculate VIF
+       vif_data[col] = 1 / (1 - r2)
+  
+   if return_dataframe:
+       vif_df = pd.DataFrame({
+           "Variable": list(vif_data.keys()),
+           "VIF": list(vif_data.values())
+       })
+       return vif_df
+  
+   return vif_data
+
 #*********************
 # Lauren B will present on the topic of Jarque-Bera test, creating function named 'jarque_bera' 
 
@@ -86,6 +136,7 @@ def ttest(a, b):
 
 #*********************
 # Chayanee C will present on the topic of D’Agostino and Pearson’s test, creating function named 'dagostino' 
+
 import numpy as np
 from scipy.stats import skew, kurtosis, skewtest, kurtosistest, normaltest
 
@@ -211,9 +262,139 @@ def chi2gof(observed, expected=None, p_vals=None, ddof=0):
     return chi2_stat, p_value
 #*********************
 # Jackson E will present on the topic of McNemar’s test, creating function named 'mcnemar' 
+import scipy.stats as stats
+
+def mcnemar(table):
+    """
+    Performs McNemar's test on a 2x2 contingency table.
+    
+    Parameters:
+    table (list of lists or 2D array): A 2x2 matrix representing paired binary outcomes.
+                                       Format: [[a, b],
+                                                [c, d]]
+                                       Where:
+                                       - a: both tests negative
+                                       - b: test1 negative, test2 positive
+                                       - c: test1 positive, test2 negative
+                                       - d: both tests positive
+    
+    Returns:
+    float: p-value from McNemar's test 
+
+    Example:
+    >>> table = [[10, 5],
+                [1, 14]]
+    >>> p_value = mcnemar(table)
+    >>> print(p_value)
+    0.22067136191984324
+
+    Notes: 
+    McNemar's test is used for paired nominal data. 
+    Because it is used with paired data, the sum of a and b must equal the sum of c and d.
+    The null hypothesis is that the proportions of discordant pairs are equal.
+    If the table is not 2x2, a ValueError will be raised.
+    This assumes that the input is a 2x2 matrix, and the DOF is 1.
+
+    """
+    # Check if the input is a 2x2 matrix
+    if len(table) != 2 or len(table[0]) != 2 or len(table[1]) != 2:
+        raise ValueError("Input must be a 2x2 matrix.")
+
+# Extract the values from the table
+    b = table[0][1]
+    c = table[1][0]
+    
+    # Calculate the test statistic
+    stat = (abs(b - c) - 1)**2 / (b + c)
+    p_value = stats.chi2.sf(stat, df=1)
+
+
+    return p_value
 
 #*********************
 # Delaney E will present on the topic of Ramsey RESET test, creating function named 'reset_test' 
+
+# The Ramsey RESET test is used to check for model misspecification in regression analysis.
+import statsmodels.api as sm
+import pandas as pd
+
+def reset_test(model, degree=2):
+    '''
+    Performs the Ramsey RESET test for model specification.
+
+    Parameters:
+    model : statsmodels.regression.linear_model.RegressionResultsWrapper
+        A fitted OLS model from statsmodels.
+    degree : int
+        The maximum power of the fitted values to include in the test (e.g., 2 includes yhat^2, 3 includes yhat^3, etc.).
+
+    Returns:
+    reset_result : dict
+        A dictionary containing the F-statistic, p-value, and null hypothesis statement.
+
+    Example:
+    >>> import statsmodels.api as sm
+    >>> import pandas as pd
+    >>> from sklearn.datasets import load_iris
+
+    >>> # Load the Iris dataset
+    >>> data = load_iris()
+    >>> df = pd.DataFrame(data.data, columns=data.feature_names)
+    >>> df['species'] = data.target
+
+    >>> # Define independent and dependent variables
+    >>> X = df[['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+    >>> X = sm.add_constant(X)  # add intercept
+    >>> y = df['species']  # species as dependent variable
+
+    >>> # Fit the initial linear regression model
+    >>> model = sm.OLS(y, X).fit()
+
+    >>> # Call the Ramsey RESET test with the degree argument
+    >>> result = reset_test(model, degree=3)
+
+    >>> # Print the test result
+    >>> print("Ramsey RESET Test Result:")
+    >>> for key, value in result.items():
+    >>>     print(f"{key}: {value}")
+    
+    Ramsey RESET Test Result:
+    F-statistic: <value>
+    p-value: <value>
+    df_diff: <value>
+    Null Hypothesis: Model is correctly specified. (No omitted nonlinear terms)
+
+    Notes:
+    The Ramsey RESET test detects general misspecification in a linear regression model
+    by adding powers of the fitted values and testing their joint significance.
+    A low p-value suggests the model may be missing nonlinear components.
+    '''
+    
+    # Check if the model is fitted/get fitted values
+    yhat = model.fittedvalues
+    # Create new dataframe with powers of fitted values
+    df = model.model.exog.copy()
+    for d in range(2, degree + 1):
+        df = pd.DataFrame(df, columns=model.model.exog_names)  # Convert to DataFrame to append new columns
+        # Add new columns for each power of fitted values
+        df[f'yhat^{d}'] = yhat**d
+
+    # Fit a new model with the original predictors and the new polynomial terms
+    y = model.model.endog
+    new_model = sm.OLS(y, sm.add_constant(df)).fit()
+
+    # Perform the F-test for the new model against the original model
+    f_test = new_model.compare_f_test(model)
+
+    # Extract the F-statistic and p-value
+    reset_result = {
+        'F-statistic': f_test[0],
+        'p-value': f_test[1],
+        'df_diff': int(f_test[2]),
+        'Null Hypothesis': 'Model is correctly specified. (No omitted nonlinear terms)'
+    }
+
+    return reset_result
 
 #*********************
 # Christian F will present on the topic of Shapiro-Wilk test, creating function named 'shapiro' 
@@ -221,6 +402,85 @@ def chi2gof(observed, expected=None, p_vals=None, ddof=0):
 #*********************
 # Lillian G will present on the topic of Mantel test, creating function named 'mantel' 
 
+def mantel_test(matrix_a, matrix_b, permutations=999, random_state=None):
+    '''
+    Performs a Mantel test to measure correlation between two distance matrices.
+    
+    Parameters:
+    -----------
+    matrix_a : array-like
+        First distance matrix (square, symmetric)
+    matrix_b : array-like
+        Second distance matrix (square, symmetric)
+    permutations : int, optional (default=999)
+        Number of permutations for the test
+    random_state : int or None, optional (default=None)
+        Random seed for reproducibility
+    
+    Returns:
+    --------
+    r : float
+        Mantel correlation statistic
+    p_value : float
+        p-value from the permutation test
+        
+    Example:
+    >>> import numpy as np
+    >>> from scipy.spatial.distance import pdist, squareform
+    >>> # Create two correlated distance matrices
+    >>> coords = np.random.rand(10, 2)
+    >>> matrix_a = squareform(pdist(coords, 'euclidean'))
+    >>> matrix_b = matrix_a * 0.9 + np.random.rand(10, 10) * 0.1
+    >>> matrix_b = (matrix_b + matrix_b.T) / 2  # Make symmetric
+    >>> np.fill_diagonal(matrix_b, 0)  # Zero diagonal
+    >>> r, p = mantel_test(matrix_a, matrix_b, permutations=99, random_state=42)
+    >>> print(f"Mantel statistic r: {r:.4f}, p-value: {p:.4f}")
+    Mantel statistic r: 0.9723, p-value: 0.0100
+    
+    Notes:
+    This test evaluates the correlation between two distance matrices using permutation
+    to assess statistical significance. It's commonly used in ecology to test for relationships
+    between different types of distances (e.g., geographic vs. community composition).
+    The matrices must be square, symmetric, and of the same dimensions.
+    '''
+    # Convert inputs to numpy arrays
+    matrix_a = np.asarray(matrix_a)
+    matrix_b = np.asarray(matrix_b)
+    
+    # Check that matrices are square and of the same size
+    if matrix_a.shape != matrix_b.shape:
+        raise ValueError("Distance matrices must be of the same shape")
+    
+    # Set random seed if provided
+    if random_state is not None:
+        np.random.seed(random_state)
+    
+    # Flatten the distance matrices, ignoring the diagonal and keeping only the lower triangle
+    # This avoids double-counting distances and including self-distances
+    n = matrix_a.shape[0]
+    indices = np.triu_indices(n, k=1)
+    a_flat = matrix_a[indices]
+    b_flat = matrix_b[indices]
+    
+    # Calculate the Mantel statistic (correlation coefficient)
+    r_obs = np.corrcoef(a_flat, b_flat)[0, 1]
+    
+    # Permutation test
+    r_perm = np.zeros(permutations)
+    for i in range(permutations):
+        # Shuffle one of the matrices
+        indices_perm = np.random.permutation(n)
+        b_perm = matrix_b[indices_perm, :][:, indices_perm]
+        b_flat_perm = b_perm[indices]
+        
+        # Calculate correlation for permuted matrix
+        r_perm[i] = np.corrcoef(a_flat, b_flat_perm)[0, 1]
+    
+    # Calculate p-value as proportion of permutations with a correlation
+    # greater than or equal to the observed correlation
+    p_value = np.sum(np.abs(r_perm) >= np.abs(r_obs)) / permutations
+    
+    return r_obs, p_value
 #*********************
 # Andy G will present on the topic of Permutation test, creating function named 'permutation_test' 
 
@@ -229,6 +489,7 @@ def chi2gof(observed, expected=None, p_vals=None, ddof=0):
 
 #*********************
 # Nick G will present on the topic of Boschloo’s test, creating function named 'boschloo' 
+
 def boschloo(table, alternative='two-sided'):
     '''
     Perform Boschloo's exact test on a 2x2 contingency table.
@@ -365,6 +626,50 @@ def boschloo(table, alternative='two-sided'):
 #*********************
 # Kyle H will present on the topic of Fisher’s exact test, creating function named 'fisher_exact' 
 
+def fisher_exact(table):
+    '''
+    Performs Fisher's exact test for a 2x2 contingency table.
+    
+    Parameters:
+    table : array-like
+        A 2x2 contingency table in the form of a list of lists or numpy array
+        [[a, b], [c, d]] where:
+        a = number of successes in group 1
+        b = number of successes in group 2
+        c = number of failures in group 1
+        d = number of failures in group 2
+    
+    Returns:
+    p_value : float
+        The p-value from Fisher's exact test
+    
+    Example:
+    >>> table = [[8, 2], [1, 5]]  # Treatment vs. Control recovery data
+    >>> p_value = fisher_exact(table)
+    >>> print(p_value)
+    0.0350877192982456
+    
+    Notes:
+    This function calculates the exact probability of observing the given table
+    or one more extreme under the null hypothesis of independence.
+    It is particularly useful for small sample sizes where chi-square 
+    approximations may not be valid.
+    '''
+    import numpy as np
+    from scipy import stats
+    
+    # Convert input to numpy array if it's not already
+    table = np.array(table, dtype=np.int64)
+    
+    # Check if the table is 2x2
+    if table.shape != (2, 2):
+        raise ValueError("Fisher's exact test requires a 2x2 contingency table")
+    
+    # Perform Fisher's exact test using SciPy
+    odds_ratio, p_value = stats.fisher_exact(table)
+    
+    return p_value
+
 #*********************
 # Emma H will present on the topic of Spearman correlation test, creating function named 'spearmanr' 
 def spearmanr(x, y):
@@ -418,6 +723,36 @@ def spearmanr(x, y):
 
 #*********************
 # Matthew L will present on the topic of Lilliefors test, creating function named 'lilliefors' 
+#!pip install statsmodels
+from statsmodels.stats.diagnostic import lilliefors as sm_lilliefors
+
+def lilliefors(data):
+    '''
+    Perform the Lilliefors test for normality.
+    
+    Parameters:
+    data : array_like
+        The dataset to test for normality.
+        
+    Returns:
+    stat : float
+        The test statistic (maximum distance between ECDF and CDF).
+    p_value : float
+        The p-value from the Lilliefors test.
+    
+    Example:
+    >>> data = [2.1, 2.3, 1.9, 2.5, 2.0]
+    >>> stat, p_value = lilliefors(data)
+    >>> print(stat)
+    >>> print(p_value)
+    
+    Notes:
+    The test is similar to the Kolmogorov-Smirnov test but allows estimating
+    the mean and variance from the data. It is suitable when population
+    parameters are unknown.
+    '''
+    stat, p_value = sm_lilliefors(data)
+    return stat, p_value
 
 #*********************
 # Hassan M will present on the topic of Partial correlation test, creating function named 'partial_corr' 
@@ -440,6 +775,18 @@ def spearmanr(x, y):
 #*********************
 # Hayley S will present on the topic of Brown-Forsythe test, creating function named 'brown_forsythe' 
 
+def brown_forsythe_test(data):
+    # Step 1: Compute the transformed response variable z_ij
+    z = [np.abs(group - np.median(group)) for group in data]
+
+    # Step 2: Perform one-way ANOVA on z_ij
+    F_stat, p_value = stats.f_oneway(*z)\
+    
+    if p_value < 0.05:
+        print("Reject the null hypothesis: The variances are not equal.")
+
+    return F_stat, p_value
+
 #*********************
 # Kayla T will present on the topic of Distance correlation test, creating function named 'dcor' 
 
@@ -448,6 +795,45 @@ def spearmanr(x, y):
 
 #*********************
 # Fig V will present on the topic of Linear regression coefficient test, creating function named 'linreg' 
+
+def linreg(X, y, coef_index = 0): 
+    """"
+    Performs a paired two sided t-test for a coefficient in linear regression
+    The inputs are X, y, and coef_index
+    X is a matrix of independent variables (including intercept)
+    y is a vector of dependent variables, also known as the response variable
+    coef_index is the index of the coefficient we are testing
+    The coef_index begins at zero for the position element in the coefficient vector
+
+    The function returns the t-statistic and p-value for the coefficient
+    """
+    from sklearn.linear_model import LinearRegression
+    import numpy as np
+    from scipy import stats
+
+    # Fit the linear regression model
+    model = LinearRegression().fit(X, y)
+
+    # Calculate predictions & residuals 
+    y_pred = model.predict(X)
+    residuals = y - y_pred
+    n = len(y)
+    p = X.shape[1]  # number of predictors (including intercept)
+
+    # Calculate the standard error of the coefficients 
+    sigma_sq = np.sum(residuals**2) / (n-p-1)
+    X_w_intercept = np.hstack((np.ones((X.shape[0], 1)), X))  # Add intercept to X
+    cov_matrix = sigma_sq * np.linalg.inv(np.dot(X_w_intercept.T, X_w_intercept))
+    se = np.sqrt(np.diag(cov_matrix))
+
+    # Calculate the t-statistic for the coefficient at coef_index
+    t_stat = model.coef_[coef_index] / se[coef_index]
+    # Calculate the p-value for the two-sided test  
+    p_value = 2 * (1 - stats.t.cdf(np.abs(t_stat), df=n-p-1))
+    
+
+    return t_stat, p_value
+
 
 #*********************
 # AbbyMae W will present on the topic of Kendall’s Tau correlation test, creating function named 'kendalltau' 
@@ -474,6 +860,48 @@ def kendalltau(x, y):
 
 #*********************
 # Polina Z will present on the topic of Harvey-Collier test, creating function named 'harvey_collier'
+
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.stats.diagnostic import linear_harvey_collier
+
+def harvey_collier(X, y):
+    """
+    Performs the Harvey-Collier test for linearity in a linear regression model.
+
+    Parameters:
+    X : array-like, shape (n_samples, n_features)
+        Predictor variables
+    y : array-like, shape (n_samples,)
+        Response variable
+
+    Returns:
+    p_value: float
+        p-value of the Harvey-Collier test.
+    
+    Example:
+    >>> X = np.linspace(0, 10, 100)
+    >>> y = np.sin(X) + np.random.normal(scale=0.1, size=100)
+    >>> p_value = harvey_collier(X, y)
+    >>> print(p_value)
+
+    Notes:
+    The Harvey-Collier Test checks whether a linear model is appropriately specified as linear.
+    A small p-value indicates that the model may be misspecified, and should be used with a nonlinear model instead.
+    """
+
+    # Ensure NumPy array. Converts data to 2D if it isn't already
+    X = np.asarray(X)
+    if X.ndim == 1:
+        X = X.reshape(-1, 1)
+    X = sm.add_constant(X)
+
+    # Fit linear regression model
+    model = sm.OLS(y, X).fit()
+
+    # Perform Harvey-Collier test and return p-value
+    t_stat, p_value = linear_harvey_collier(model)
+    return p_value
 
 #*********************
 
