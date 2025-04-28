@@ -484,6 +484,84 @@ def mantel_test(matrix_a, matrix_b, permutations=999, random_state=None):
 #*********************
 # Andy G will present on the topic of Permutation test, creating function named 'permutation_test' 
 
+def permutation_test(a, b, n_permutations=10000, statistic=None):
+    '''
+    Perform a permutation test to determine if two samples come from the same distribution.
+    
+    Parameters:
+    a : array_like
+        First sample.
+    b : array_like
+        Second sample.
+    n_permutations : int, optional
+        Number of permutations to perform. Default is 10000.
+    statistic : function, optional
+        Function that returns the test statistic. Default is the difference in means.
+        
+    Returns:
+    p_value : float
+        The estimated p-value for the null hypothesis that the two samples come from the same distribution.
+    observed_stat : float
+        The observed test statistic.
+        
+    Example:
+    >>> a = [10, 11, 12, 13, 14]
+    >>> b = [7, 8, 9, 10, 11]
+    >>> p_value, observed_stat = permutation_test(a, b)
+    >>> print(f"P-value: {p_value}")
+    P-value: 0.0384
+    >>> print(f"Observed statistic: {observed_stat}")
+    Observed statistic: 3.0
+    
+    Notes:
+    The permutation test is a non-parametric statistical test that estimates the probability of obtaining
+    the observed test statistic (or a more extreme value) under the null hypothesis that the two samples
+    come from the same distribution. The test works by randomly permuting the combined data many times
+    and calculating the test statistic for each permutation.
+    
+    The test makes no assumptions about the underlying distributions of the data, making it useful
+    when the assumptions of parametric tests (like the t-test) are not met.
+    '''
+    import numpy as np
+    
+    # Convert inputs to numpy arrays
+    a = np.array(a)
+    b = np.array(b)
+    
+    # Default statistic is the difference in means
+    if statistic is None:
+        statistic = lambda x, y: np.mean(x) - np.mean(y)
+    
+    # Calculate the observed test statistic
+    observed_stat = statistic(a, b)
+    
+    # Combine the data
+    combined = np.concatenate((a, b))
+    n_a = len(a)
+    n_b = len(b)
+    n = n_a + n_b
+    
+    # Count the number of permutations where the statistic is as extreme as observed
+    count = 0
+    for _ in range(n_permutations):
+        # Randomly permute the combined data
+        np.random.shuffle(combined)
+        
+        # Split the permuted data into two groups of the original sizes
+        perm_a = combined[:n_a]
+        perm_b = combined[n_a:]
+        
+        # Calculate the permuted test statistic
+        perm_stat = statistic(perm_a, perm_b)
+        
+        # Count if the permuted statistic is as extreme as the observed
+        if np.abs(perm_stat) >= np.abs(observed_stat):
+            count += 1
+    
+    # Calculate the p-value
+    p_value = count / n_permutations
+    
+    return p_value, observed_stat
 #*********************
 # Emma G will present on the topic of Anderson-Darling test, creating function named 'anderson' 
 
@@ -714,7 +792,55 @@ def spearmanr(x, y):
     return correlation, p_value
 #*********************
 # Elijah J will present on the topic of Bartlett’s test, creating function named 'bartlett' 
-
+def bartlett(*samples):
+    '''
+    Perform Bartlett's test for homogeneity of variances across multiple samples.
+    
+    Parameters:
+    *samples : array_like
+        Two or more arrays of sample data. Each array must have at least 2 observations.
+        
+    Returns:
+    test_statistic : float
+        The Bartlett test statistic (T).
+    p_value : float
+        The p-value for the test.
+        
+    Example:
+    >>> sample1 = [1, 2, 3, 4, 5]
+    >>> sample2 = [2, 3, 4, 5, 6]
+    >>> sample3 = [3, 4, 5, 6, 7]
+    >>> T, p = bartlett_test(sample1, sample2, sample3)
+    >>> print(f"Test statistic: {T:.4f}, p-value: {p:.4f}")
+    
+    Notes:
+    - Bartlett's test assumes normality. Use Levene's test if normality is questionable.
+    - Requires at least two samples, each with ≥2 observations.
+    '''
+    samples = [np.asarray(sample) for sample in samples]
+    k = len(samples)
+    if k < 2:
+        raise ValueError("At least two samples are required.")
+    
+    ni = np.array([len(sample) for sample in samples])
+    if np.any(ni < 2):
+        raise ValueError("Each sample must have at least 2 observations.")
+    
+    n = np.sum(ni)
+    variances = np.array([np.var(sample, ddof=1) for sample in samples])
+    
+    # Pooled variance
+    pooled_var = np.sum((ni - 1) * variances) / (n - k)
+    
+    # Numerator and denominator for the test statistic
+    numerator = (n - k) * np.log(pooled_var) - np.sum((ni - 1) * np.log(variances))
+    denominator = 1 + (np.sum(1 / (ni - 1)) - 1 / (n - k)) / (3 * (k - 1))
+    
+    T = numerator / denominator
+    df = k - 1  # Correct degrees of freedom
+    p_value = 1 - stats.chi2.cdf(T, df)
+    
+    return T, p_value
 #*********************
 # Gabriela J will present on the topic of Chi-square test of independence, creating function named 'chi2indep' 
 
@@ -759,6 +885,55 @@ def lilliefors(data):
 
 #*********************
 # Bella P will present on the topic of Durbin-Watson test, creating function named 'durbin_watson' 
+import statsmodels.api as sm
+from scipy.stats import chi2
+import numpy as np
+
+
+def durbin_watson_test(residuals, n_params):
+   """
+   Calculates the Durbin-Watson statistic and its p-value.
+
+
+   Args:
+       residuals (array-like): Residuals from a regression model.
+       n_params (int): Number of parameters in the regression model, including the intercept.
+
+
+   Returns:
+       tuple: (Durbin-Watson statistic, p-value)
+
+
+   # Example Usage:
+   residuals = [0.5, -0.2, 0.1, -0.3, 0.4]  # Example residuals
+   n_params = 2  # Assume 1 predictor + intercept
+   dw_stat, p_val = durbin_watson_test(residuals, n_params)
+   print(f"Durbin-Watson statistic: {dw_stat:.4f}")
+   print(f"Approximate p-value: {p_val:.4f}")
+   Durbin-Watson statistic: 2.3000
+   Approximate p-value: 0.2345
+
+
+   Notes:
+   - The Durbin-Watson statistic tests for autocorrelation in regression residuals.
+   - A statistic near 2 suggests no autocorrelation.
+   - Values closer to 0 suggest positive autocorrelation.
+   - Values closer to 4 suggest negative autocorrelation.
+   - The p-value is calculated using the chi-squared distribution, which give an approximation.
+   - More accurate p-values can be obtained using a specific Durbin-Watson table.
+   """
+   # Compute Durbin-Watson statistic
+   dw = sm.stats.durbin_watson(residuals)
+   n = len(residuals)
+
+
+   # Approximate p-value using the chi-squared distribution
+   if dw <= 2:
+       p_value = chi2.cdf(n * (2 - dw) / 2, n_params - 1)
+   else:
+       p_value = chi2.cdf(n * (dw - 2) / 2, n_params - 1)
+  
+   return dw, p_value
 
 #*********************
 # Chris RT will present on the topic of Fligner-Killeen test, creating function named 'fligner_killeen' 
